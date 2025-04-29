@@ -20,7 +20,7 @@ def create_logs(parsed_csv: list[list[ str ]]) -> list[ str ]:
             start_time = time_to_seconds(jobs_dict[ event[ 3 ]])
             end_time = time_to_seconds(event[ 0 ])
             task_description = event[ 1 ]
-
+            
             if start_time > end_time: #should this annomaly be logged?
                 logs.append(f"ERROR: Start time is grater than end time for task {task_description} with PID {event[ 3 ]}")
                 continue
@@ -30,17 +30,17 @@ def create_logs(parsed_csv: list[list[ str ]]) -> list[ str ]:
             reconstructed_passed_time = timedelta(seconds=passed_time)
 
             if passed_time >= 600:
-                logs.append(f"ERROR: Process {task_description} with - {event[ 3 ]} PID, took {reconstructed_passed_time} minutes to execute")
+                logs.append(f"ERROR: Process {task_description} with - {event[ 3 ]} PID, took {reconstructed_passed_time} to execute")
             elif passed_time >= 300:
-                logs.append(f"WARNING: Process {task_description} with - {event[ 3 ]} PID, took {reconstructed_passed_time} minutes to execute")
+                logs.append(f"WARNING: Process {task_description} with - {event[ 3 ]} PID, took {reconstructed_passed_time} to execute")
             del jobs_dict[ event[ 3 ] ] # normally PIDs are reusable, it applies to this case?
         # Ensures that a end process is not logged if it was never started
         elif event[ 3 ] not in jobs_dict and event[ 2 ].lower() == 'start':
             jobs_dict[ event[ 3 ] ] = event[ 0 ]
-
+            
     # If there are any processes that started but never ended, log them
     if jobs_dict:
         for key in jobs_dict:
-            logs.append(f"ERROR: Process {jobs_dict[ key ]} with - {key} PID didn't finish")
-    
+            logs.append(f"ERROR: Process {key} didn't finish") 
+
     return logs
