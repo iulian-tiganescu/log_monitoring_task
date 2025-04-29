@@ -12,8 +12,10 @@ def read_csv(file_path: str, csv_delimiter: str = ',') -> list[ list[ str ] ]:
         with open(file_path, mode="r", newline="") as file:
             # Read the CSV file using the delimiter
             csv_reader = csv.reader(file, delimiter=csv_delimiter)
-            # Parse the CSV file into a list of lists
-            parsed_csv = [row for row in csv_reader]
+            # Parse the CSV file into a list of lists and remove extra spaces
+            parsed_csv = [[ " ".join(cell.split()) if i == 1 else cell.replace(" ", "") 
+                        for i, cell in enumerate(row) ] 
+                        for row in csv_reader ]
             return parsed_csv
     except Exception as e:
         print(f"Error reading the CSV file: {e}")
